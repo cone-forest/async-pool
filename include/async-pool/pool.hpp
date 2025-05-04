@@ -9,11 +9,27 @@ namespace mr {
 
   template <typename T>
   struct Handle {
-    std::reference_wrapper<bcpp::work_contract> contract;
+    std::optional<std::reference_wrapper<bcpp::work_contract>> contract {};
     std::reference_wrapper<T> resource;
 
+    Handle(bcpp::work_contract& c, T& r) : contract(c), resource(r) {}
+
+    Handle() = default;
+
+    Handle(const Handle &) = delete;
+    Handle & operator=(const Handle &) = delete;
+
+    Handle(Handle && other) noexcept : resource(std::move(other.resource)) {
+      std::swap(contract, other.contract);
+    }
+    Handle& operator=(Handle && other) noexcept {
+      resource = std::move(other.resource);
+      std::swap(contract, other.contract);
+      return *this;
+    }
+
     ~Handle() noexcept {
-      contract.get().schedule();
+      if (contract.has_value()) { contract.value().get().schedule(); }
     }
 
     T & get() {
