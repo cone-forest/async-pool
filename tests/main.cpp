@@ -10,9 +10,13 @@ int main() {
   mr::AsyncResourcePool<int, size> pool;
 
   // write
-  for (int i = 0; i < size; i++) {
-    auto reshandle = pool.acquire();
-    reshandle.get() = i;
+  {
+    std::vector<mr::Handle<int>> handles;
+    handles.reserve(size);
+    for (int i = 0; i < size; i++) {
+      handles.push_back(pool.acquire());
+      handles.back().get() = i;
+    }
   }
 
   std::vector<std::thread> threads(size);
