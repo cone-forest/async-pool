@@ -17,3 +17,6 @@ bash viz.sh
   - draw a graph:
     - X - object index
     - Y - number of object's acquisitions
+
+![Output](output.png)
+
